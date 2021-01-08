@@ -60,6 +60,11 @@ git checkout -- <filename>
 //丢弃所有的本地改动与提交，可以到服务器上获取最新的版本并将你本地主分支指向到它
 git fetch origin
 git reset --hard origin/master
+//回滚到本地指定版本
+git log //查看提交的ID 
+git reset --hard commitId  //回滚到指定ID，此时本地文件也会被删除，注意做好备份
+//git撤销本地的commit
+git reset HEAD~
 ```
 
 ​		1.8 其它命令
