@@ -62,8 +62,8 @@ git fetch origin
 git reset --hard origin/master
 //回滚到本地指定版本
 git log //查看提交的ID 
-git reset --hard commitId  //回滚到指定ID，此时本地文件也会被删除，注意做好备份
-//git撤销本地的commit
+git reset --hard commitId  //回滚到指定ID，此时本地修改文件也会被还原到指定commitid版本，注意做好备份
+//git只是撤销本地的commit，并不会撤销本地文件
 git reset HEAD~
 ```
 
