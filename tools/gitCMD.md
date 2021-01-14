@@ -18,6 +18,8 @@ git config --help
 ```
 //保存账号密码,执行后,输入一次即可
 git config --global credential.helper store
+//清除保存的账号密码
+git config --global credential.helper reset
 //全局账户(电脑上所有的git仓库起作用)
 git config --global user.name  "yourname"  
 git config --global user.email  "your email"
