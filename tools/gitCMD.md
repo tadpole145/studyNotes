@@ -13,7 +13,7 @@ git config --list
 git config --help
 ```
 
-设置账户和密码
+##### 设置账户和密码
 
 ```
 //保存账号密码,执行后,输入一次即可
@@ -29,7 +29,7 @@ git config  user.email  "email"
 //局部变量覆盖全局变量,局部优先,没有设置才会去使用全局的.
 ```
 
-修改账户密码
+##### 修改账户密码
 
 ```
 //方法1,使用上面的设置命令重新设置一遍
@@ -55,14 +55,14 @@ git add *         //添加所有文件
 git commit -m "代码提交信息"
 ```
 
-​		1.3.  推送至仓库
+#####  推送至仓库
 
 ```
-git push origin master
-//可以把 master 换成你想要推送的任何分支
+git push //默认推送到主分支
+git push origin master //可以把 master 换成你想要推送的任何分支
 ```
 
-​		1.4 分支	
+#####  分支	
 
 ```
 //创建分支
@@ -75,7 +75,7 @@ git branch -d feature_x
 git push origin <branch>
 ```
 
-​		1.5 更新与合并
+##### 更新与合并
 
 ```
 //更新
@@ -84,19 +84,19 @@ git pull
 git merge <branch>
 ```
 
-​		1.6 标签
+#####  标签
 
 ```
+git log //查看提交日志
 //1b2e1d63ff 是你想要标记的提交 ID 的前 10 位字符。你也可以用该提交 ID 的少一些的前几位，只要它是唯一的。
 git tag 1.0.0 1b2e1d63ff
 ```
 
-​		1.7 替换本地改动
+##### 替换本地改动
 
 ```
-git checkout -- <filename>
-//丢弃所有的本地改动与提交，可以到服务器上获取最新的版本并将你本地主分支指向到它
-git fetch origin
+git checkout -- <filename> //获取服务器指定文件
+git fetch origin //丢弃所有的本地改动与提交，可以到服务器上获取最新的版本并将你本地主分支指向到它
 git reset --hard origin/master
 //回滚到本地指定版本
 git log //查看提交的ID 
@@ -118,7 +118,52 @@ gitk
 
 ### 常见问题
 
-Q: 使用gitee clone仓库,输入账号密码错误后,如何修改?
+##### Q: 使用gitee clone仓库,输入账号密码错误后,如何修改?
 
-A: 电脑的控制面板–>用户账户–>管理Windows凭据, 找到gitee,重新输入正确的账号密码
+> 电脑的控制面板–>用户账户–>管理Windows凭据, 找到gitee,重新输入正确的账号密码
+
+##### 查看人家的项目时,ReadMe文档中的图片无法显示
+
+> win系统下, 修改hosts文件  C:\Windows\System32\drivers\etc\hosts
+
+```
+# GitHub Start 
+192.30.253.112    Build software better, together 
+192.30.253.119    gist.github.com
+151.101.184.133    assets-cdn.github.com
+151.101.184.133    raw.githubusercontent.com
+151.101.184.133    gist.githubusercontent.com
+151.101.184.133    cloud.githubusercontent.com
+151.101.184.133    camo.githubusercontent.com
+151.101.184.133    avatars0.githubusercontent.com
+151.101.184.133    avatars1.githubusercontent.com
+151.101.184.133    avatars2.githubusercontent.com
+151.101.184.133    avatars3.githubusercontent.com
+151.101.184.133    avatars4.githubusercontent.com
+151.101.184.133    avatars5.githubusercontent.com
+151.101.184.133    avatars6.githubusercontent.com
+151.101.184.133    avatars7.githubusercontent.com
+151.101.184.133    avatars8.githubusercontent.com
+
+ # GitHub End
+```
+
+##### 我想clone人家项目,但是很慢,怎么样提速?
+
+> 主流的方法有三个:
+>
+> 1. 修改host文件   (有人说有效,有人说无效,推荐指数: ★);
+> 2. 使用gitee克隆,然后去gitee下载  (推荐指数: ★★★);
+> 3. 使用gitclone命令 (推荐指数: ★★★★★), 使用教程参考[官网](https://www.gitclone.com/),推荐方法一,方法二在push项目时候出错.
+
+##### 我push我的项目,每次push都需要输入账号密码,怎么解决?
+
+> 参考上面git命令的设置账号密码,设置如下指令即可达到主需要输入一次性账号密码
+
+```
+//保存账号密码,执行后,输入一次即可
+git config --global credential.helper store
+//清除保存的账号密码
+git config --global credential.helper reset
+```
 
