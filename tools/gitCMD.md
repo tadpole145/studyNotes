@@ -1,14 +1,50 @@
 ## git命令
 
-1. #### 常用命令
+#### 常用命令
 
-   1.1  检出仓库
+##### 查看配置
+
+```
+//查看可配置的功能列表
+git config
+//查看自己已经配置的参数
+git config --list
+//查看帮助
+git config --help
+```
+
+设置账户和密码
+
+```
+//保存账号密码,执行后,输入一次即可
+git config --global credential.helper store
+//全局账户(电脑上所有的git仓库起作用)
+git config --global user.name  "yourname"  
+git config --global user.email  "your email"
+//当前账户(只对当前仓库起作用)
+git config  user.name  "username"  
+git config  user.email  "email"
+//局部变量覆盖全局变量,局部优先,没有设置才会去使用全局的.
+```
+
+修改账户密码
+
+```
+//方法1,使用上面的设置命令重新设置一遍
+//方法2使用替换命令进行替换
+git config --replace-all user.name "name"
+git config --replace-all user.email "123@qq.com"
+```
+
+
+
+#####   检出仓库
 
 ```
 git clone 仓库地址
 ```
 
-​		1.2 添加与提交
+##### 添加与提交
 
 ```
 git add <filename>   //添加单个文件
