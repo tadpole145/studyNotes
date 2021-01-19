@@ -155,6 +155,7 @@ gitk
 > 1. 修改host文件   (有人说有效,有人说无效,推荐指数: ★);
 > 2. 使用gitee克隆,然后去gitee下载  (推荐指数: ★★★);
 > 3. 使用gitclone命令 (推荐指数: ★★★★★), 使用教程参考[官网](https://www.gitclone.com/),推荐方法一,方法二在push项目时候出错.
+> 4. 使用github镜像下载, [镜像一](https://github.com.cnpmjs.org), [镜像二](https://hub.fastgit.org) (推荐指数: ★★★★★);
 
 ##### 我push我的项目,每次push都需要输入账号密码,怎么解决?
 
