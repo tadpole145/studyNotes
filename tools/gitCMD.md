@@ -2,7 +2,7 @@
 
 #### 常用命令
 
-##### 查看配置
+##### 查看配置与版本升级
 
 ```
 //查看可配置的功能列表
@@ -11,6 +11,10 @@ git config
 git config --list
 //查看帮助
 git config --help
+//查看版本
+git version
+//升级版本
+git update-git-for-windows
 ```
 
 ##### 设置账户和密码
