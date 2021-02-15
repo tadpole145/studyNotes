@@ -1,0 +1,1 @@
+[阿里云maven仓库列表](https://maven.aliyun.com/mvn/view)
