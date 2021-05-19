@@ -774,5 +774,229 @@ form表单中的使用
 </form>
 ```
 
+##### 请求映射原理
 
+![image.png](https://i.loli.net/2021/05/19/RevEgby3WZ7AXho.png)
+
+每个请求,最后都会执行doDispatch方法.
+
+```java
+/**
+ * 所有的http请求都会走该方法,具体执行,所有请求将依次通过应用servlet的HandlerMappings获得能处理该请求的HandlerAdapter。 
+ */
+protected void doDispatch(HttpServletRequest request, HttpServletResponse response) throws Exception {
+   HttpServletRequest processedRequest = request;
+   HandlerExecutionChain mappedHandler = null;
+   boolean multipartRequestParsed = false;
+
+   WebAsyncManager asyncManager = WebAsyncUtils.getAsyncManager(request);
+
+   try {
+      ModelAndView mv = null;
+      Exception dispatchException = null;
+	//上面都是一些变量的初始化
+      try {
+          //检查是否为文件传输请求
+         processedRequest = checkMultipart(request);
+         multipartRequestParsed = (processedRequest != request);
+
+        //找到当前请求使用哪个Handler（Controller的方法）处理
+         mappedHandler = getHandler(processedRequest);
+         if (mappedHandler == null) {
+            noHandlerFound(processedRequest, response);
+            return;
+         }
+
+         // Determine handler adapter for the current request.
+         HandlerAdapter ha = getHandlerAdapter(mappedHandler.getHandler());
+
+         // Process last-modified header, if supported by the handler.
+         String method = request.getMethod();
+         boolean isGet = "GET".equals(method);
+         if (isGet || "HEAD".equals(method)) {
+            long lastModified = ha.getLastModified(request, mappedHandler.getHandler());
+            if (new ServletWebRequest(request, response).checkNotModified(lastModified) && isGet) {
+               return;
+            }
+         }
+
+         if (!mappedHandler.applyPreHandle(processedRequest, response)) {
+            return;
+         }
+
+         // Actually invoke the handler.
+         mv = ha.handle(processedRequest, response, mappedHandler.getHandler());
+
+         if (asyncManager.isConcurrentHandlingStarted()) {
+            return;
+         }
+
+         applyDefaultViewName(processedRequest, mv);
+         mappedHandler.applyPostHandle(processedRequest, response, mv);
+      }
+      catch (Exception ex) {
+         dispatchException = ex;
+      }
+      catch (Throwable err) {
+         // As of 4.3, we're processing Errors thrown from handler methods as well,
+         // making them available for @ExceptionHandler methods and other scenarios.
+         dispatchException = new NestedServletException("Handler dispatch failed", err);
+      }
+      processDispatchResult(processedRequest, response, mappedHandler, mv, dispatchException);
+   }
+   catch (Exception ex) {
+      triggerAfterCompletion(processedRequest, response, mappedHandler, ex);
+   }
+   catch (Throwable err) {
+      triggerAfterCompletion(processedRequest, response, mappedHandler,
+            new NestedServletException("Handler processing failed", err));
+   }
+   finally {
+      if (asyncManager.isConcurrentHandlingStarted()) {
+         // Instead of postHandle and afterCompletion
+         if (mappedHandler != null) {
+            mappedHandler.applyAfterConcurrentHandlingStarted(processedRequest, response);
+         }
+      }
+      else {
+         // Clean up any resources used by a multipart request.
+         if (multipartRequestParsed) {
+            cleanupMultipart(processedRequest);
+         }
+      }
+   }
+}
+```
+
+![image.png](https://i.loli.net/2021/05/19/OcdEnXUvWYJLbkA.png)
+
+**RequestMappingHandlerMapping**：保存了所有@RequestMapping 和handler的映射规则.
+
+**WelcomePageHandlerMapping**  : 用于存储访问index的访问规则
+
+如果我们需要一些自定义的映射处理，我们也可以自己给容器中放**HandlerMapping**。自定义 **HandlerMapping**
+
+##### 请求参数与注解
+
+- @PathVariable、路径变量
+- @RequestHeader、请求头
+- @ModelAttribute、 
+- @RequestParam、请求参数
+- @MatrixVariable、
+- @CookieValue、cookie值
+- @RequestBody   请求体
+- @RequestAttribute 设置请求转发传递参数
+
+
+
+> ```java
+> @RestController
+> public class ParameterTestController {
+> 
+> 
+>     //  car/2/owner/zhangsan  restful请求风格使用
+>     @GetMapping("/car/{id}/owner/{username}")
+>     public Map<String,Object> getCar(@PathVariable("id") Integer id,   //PathVariable,  动态替换请求路径的值
+>                                      @PathVariable("username") String name,
+>                                      @PathVariable Map<String,String> pv,  //自动将路径变量值存进map
+>                                      @RequestHeader("User-Agent") String userAgent, //获取指定的请求头
+>                                      @RequestHeader Map<String,String> header,  //获取所有的请求头
+>                                      //car?age=18&inters=basketball  拼接请求链接时候使用RequestParam
+>                                      @RequestParam("age") Integer age,  //请求参数
+>                                      @RequestParam("inters") List<String> inters,
+>                                      //自动将拼接请求链接的参数放入map集合中
+>                                      @RequestParam Map<String,String> params,
+>                                      @CookieValue("_ga") String _ga,
+>                                      @CookieValue("_ga") Cookie cookie){
+> 
+> 
+>         Map<String,Object> map = new HashMap<>();
+> 
+> //        map.put("id",id);
+> //        map.put("name",name);
+> //        map.put("pv",pv);
+> //        map.put("userAgent",userAgent);
+> //        map.put("headers",header);
+>         map.put("age",age);
+>         map.put("inters",inters);
+>         map.put("params",params);
+>         map.put("_ga",_ga);
+>         System.out.println(cookie.getName()+"===>"+cookie.getValue());
+>         return map;
+>     }
+> 
+> 
+>     @PostMapping("/save")
+>     public Map postMethod(@RequestBody String content){
+>         Map<String,Object> map = new HashMap<>();
+>         map.put("content",content);
+>         return map;
+>     }
+> 
+> 
+>     //1、语法： 请求路径：/cars/sell;low=34;brand=byd,audi,yd
+>     //2、SpringBoot默认是禁用了矩阵变量的功能
+>     //      手动开启：原理。对于路径的处理。UrlPathHelper进行解析。
+>     //              removeSemicolonContent（移除分号内容）支持矩阵变量的
+>     //3、矩阵变量必须有url路径变量才能被解析
+>     @GetMapping("/cars/{path}")
+>     public Map carsSell(@MatrixVariable("low") Integer low,
+>                         @MatrixVariable("brand") List<String> brand,
+>                         @PathVariable("path") String path){
+>         Map<String,Object> map = new HashMap<>();
+> 
+>         map.put("low",low);
+>         map.put("brand",brand);
+>         map.put("path",path);
+>         return map;
+>     }
+> 
+>     // /boss/1;age=20/2;age=10
+> 
+>     @GetMapping("/boss/{bossId}/{empId}")
+>     public Map boss(@MatrixVariable(value = "age",pathVar = "bossId") Integer bossAge,
+>                     @MatrixVariable(value = "age",pathVar = "empId") Integer empAge){
+>         Map<String,Object> map = new HashMap<>();
+> 
+>         map.put("bossAge",bossAge);
+>         map.put("empAge",empAge);
+>         return map;
+> 
+>     }
+> }
+> ```
+
+ 转发并传递参数到下个页面@RequestAttribute
+
+```java
+@Controller
+public class ParameterTestController {
+
+    @GetMapping("/toIndex")
+    public String goIndex() {
+        return "forward:/index.html";  //转发到index页面
+    }
+    
+    
+    @GetMapping("/toSuccess")
+    public String toSuccess(HttpServletRequest request) {
+        //通过HttpServletRequest设置参数
+        request.setAttribute("msg" ,"属性值");
+        return "forward:/success";
+    }
+
+    @ResponseBody
+    @GetMapping("/success")
+    public Map<String, Object> success(@RequestAttribute("msg")String msg, HttpServletRequest request) {
+        //方法1.  直接通过@RequestAttribute接受参数
+        Map<String,Object> map = new HashMap<>();
+        map.put("msg", msg);
+        //方法2, 通过HttpServletRequest的getAttribute获取
+        String attribute = (String) request.getAttribute("msg");
+        return map;
+    }
+   
+    
+}
+```
 
