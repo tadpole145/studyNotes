@@ -2325,8 +2325,95 @@ public SpringApplication(ResourceLoader resourceLoader, Class<?>... primarySourc
 1. 创建SpringApplication对象
    - 初始化一些变量与信息
    - 判断当前应用的类型(响应式还是原生servlet,根据DispatcherHandler类型判断)
-   - 初始启动引导器**bootstrappers**, 去spring.factories文件中找 org.springframework.boot.Bootstrapper
+   - 初始启动引导器**bootstrapRegistryInitializers**, 去spring.factories文件中找 org.springframework.boot.Bootstrapper
    - 初始化 **initializers**, 去**spring.factories**查找
    - 初始化**ApplicationListener** ,去**spring.factories**查找
 2. 运行SpringApplication
 
+- ```java
+  public ConfigurableApplicationContext run(String... args) {
+  		StopWatch stopWatch = new StopWatch();
+      //1. 记录应用的启动时间
+  		stopWatch.start();
+      //2.创建引导上下文(Context环境), 让之前获取的启动引导bootstrapRegistryInitializers执行initialize方法
+  		DefaultBootstrapContext bootstrapContext = createBootstrapContext();
+  		ConfigurableApplicationContext context = null;
+      //3.让当前应用进入headless模式.无需显示器也能运行
+  		configureHeadlessProperty();
+      //4.去spring.factories找 SpringApplicationRunListener
+  		SpringApplicationRunListeners listeners = getRunListeners(args);
+      //5遍历 SpringApplicationRunListener 调用 starting 方法；告诉监听者项目正在启动
+  		listeners.starting(bootstrapContext, this.mainApplicationClass);
+  		try {
+              //6. 保存命令行参数
+  			ApplicationArguments applicationArguments = new DefaultApplicationArguments(args);
+              //7 准备运行环境
+              	//a.根据webApplicationType返回当前应用的运行环境, 默认StandardServletEnvironment
+              	//b.配置环境信息, 读取所有配置源的属性值
+              	//c. 绑定环境信息
+              	//d.监听器调用 listener.environmentPrepared()；通知所有的监听器当前环境准备完成
+  			ConfigurableEnvironment environment = prepareEnvironment(listeners, bootstrapContext, applicationArguments);
+  			configureIgnoreBeanInfo(environment);
+              //8. 打印banner
+  			Banner printedBanner = printBanner(environment);
+              //9 创建IOC容器
+  			context = createApplicationContext();
+  			context.setApplicationStartup(this.applicationStartup);
+              //准备ApplicationContext IOC容器的基本信息
+              	//a.保存环境信息
+              	//b.IOC容器的后置处理流程。
+              	//c.应用初始器applyInitializers
+              	//遍历所有的 ApplicationContextInitializer 。调用 initialize.。来对ioc容器进行初始化扩展功能
+              `	//遍历所有的 listener 调用 contextPrepared。EventPublishRunListenr；通知所有的监听器contextPrepared
+                  //所有的监听器 调用 contextLoaded。通知所有的监听器 contextLoaded；
+  			prepareContext(bootstrapContext, context, environment, listeners, applicationArguments, printedBanner);
+              //刷新IOC容器。refreshContext,创建容器中的所有组件
+  			refreshContext(context);
+              //通知IOC容器刷新完成
+  			afterRefresh(context, applicationArguments);
+  			stopWatch.stop();
+  			if (this.logStartupInfo) {
+  				new StartupInfoLogger(this.mainApplicationClass).logStarted(getApplicationLog(), stopWatch);
+  			}
+              //所有监听 器 调用 listeners.started(context); 通知所有的监听器 started
+  			listeners.started(context);
+              //调用所有的runners,比如ApplicationRunner,CommandLineRunner然后合并
+  			callRunners(context, applicationArguments);
+  		}
+  		catch (Throwable ex) {
+              //调用所有 Listener 的 failed；通知所有的监听器 failed
+  			handleRunFailure(context, ex, listeners);
+  			throw new IllegalStateException(ex);
+  		}
+  
+  		try {
+              //执行run方法
+  			listeners.running(context);
+  		}
+  		catch (Throwable ex) {
+  			handleRunFailure(context, ex, null);
+  			throw new IllegalStateException(ex);
+  		}
+  		return context;
+  	}
+  ```
+
+补充资料: 
+
+-  [Headless模式](http://jimolonely.github.io/2019/03/26/java/039-java-headless/)
+- [configureHeadlessProperty()方法](https://blog.csdn.net/zzb5682119/article/details/92796522)
+
+#### 自定义监听器
+
+- spring.factories 配置文件配置
+  - ApplicationContextInitializer
+  - ApplicationListener
+  - SpringApplicationRunListener
+
+- 使用@component放置容器中即可
+  - ApplicationRunner 
+  - CommandLineRunner
+
+<img src="https://i.loli.net/2021/06/09/5USkdeLfapHmOKI.png" alt="image-20210609153803237"  />
+
+![image-20210609153836237](https://i.loli.net/2021/06/09/ZJlcVBCYFWota5K.png)
