@@ -78,7 +78,7 @@ export PATH
 
 ```
 
-- 启动/关闭服务,终端输入命令
+###### 启动/关闭服务,终端输入命令
 
 ```java
 zkServer.sh start   //启动服务
