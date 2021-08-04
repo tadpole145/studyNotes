@@ -4,6 +4,8 @@
 
 #### git命令
 
+![git命令](https://gitee.com/tadpole145/images/raw/main/20210804182459.png)
+
 ##### 查看与升级
 
 ```java
@@ -230,58 +232,6 @@ git pull 别名 分支名
 
 
 
-#### git常见问题
-
-##### Q: 使用gitee clone仓库,输入账号密码错误后,如何修改?
-
-> 电脑的控制面板–>用户账户–>管理Windows凭据, 找到gitee,重新输入正确的账号密码
-
-##### 查看人家的项目时,ReadMe文档中的图片无法显示
-
-> 由于ip被墙导致国内经常无法连接github的ip地址, 可以在win系统下, 修改hosts文件  C:\Windows\System32\drivers\etc\hosts
-
-```
-# GitHub Start 
-192.30.253.112    Build software better, together 
-192.30.253.119    gist.github.com
-151.101.184.133    assets-cdn.github.com
-151.101.184.133    raw.githubusercontent.com
-151.101.184.133    gist.githubusercontent.com
-151.101.184.133    cloud.githubusercontent.com
-151.101.184.133    camo.githubusercontent.com
-151.101.184.133    avatars0.githubusercontent.com
-151.101.184.133    avatars1.githubusercontent.com
-151.101.184.133    avatars2.githubusercontent.com
-151.101.184.133    avatars3.githubusercontent.com
-151.101.184.133    avatars4.githubusercontent.com
-151.101.184.133    avatars5.githubusercontent.com
-151.101.184.133    avatars6.githubusercontent.com
-151.101.184.133    avatars7.githubusercontent.com
-151.101.184.133    avatars8.githubusercontent.com
-
- # GitHub End
-```
-
-##### 我想clone人家项目,但是很慢,怎么样提速?
-
-> 主流的方法有三个:
->
-> 1. 修改host文件 ;
-> 2. 使用gitee克隆,然后去gitee下载  (推荐指数: ★★★);
-> 3. 使用gitclone命令 (推荐指数: ★★★★★), 使用教程参考[官网](https://www.gitclone.com/),推荐方法一,方法二在push项目时候出错.
-> 4. 使用github镜像下载, [镜像一](https://github.com.cnpmjs.org), [镜像二](https://hub.fastgit.org) (推荐指数: ★★★★★);
-
-##### 我push我的项目,每次push都需要输入账号密码,怎么解决?
-
-> 参考上面git命令的设置账号密码,设置如下指令即可达到主需要输入一次性账号密码
-
-```
-//保存账号密码,执行后,输入一次即可
-git config --global credential.helper store
-//清除保存的账号密码
-git config --global credential.helper reset
-```
-
 
 
 #### IDEA集成Git
@@ -436,5 +386,106 @@ Tips:  方法二,点击合并会直接合并,不会向方法一提供日志功�
 
 
 
-#### IDEA集成Gitee
+
+
+#### Gitee使用
+
+##### 结合git客户端
+
+在gitee上创建一个新仓库,就会出现如下图所示的入门教程.
+
+![image-20210804112726723](https://gitee.com/tadpole145/images/raw/main/20210804112726.png)
+
+##### IDEA集成Gitee
+
+1. idea中安装gitee插件
+2. 操作参见github, 同样是add文件,commit,share...
+3. pull,push,clone 与github一致...
+
+
+
+##### gitee 迁移github项目
+
+![image-20210804114505544](https://gitee.com/tadpole145/images/raw/main/20210804114505.png)
+
+
+
+#### git常见问题
+
+
+
+##### Q: 使用gitee clone仓库,输入账号密码错误后,如何修改?
+
+> 电脑的控制面板–>用户账户–>管理Windows凭据, 找到gitee,重新输入正确的账号密码
+
+##### 查看人家的项目时,ReadMe文档中的图片无法显示
+
+> 由于ip被墙导致国内经常无法连接github的ip地址, 可以在win系统下, 修改hosts文件  C:\Windows\System32\drivers\etc\hosts
+
+```properties
+# GitHub520 Host Start  每小时更新,请自行参考官方开源库设置
+140.82.113.25                 alive.github.com
+140.82.112.25                 live.github.com
+185.199.108.154               github.githubassets.com
+140.82.114.21                 central.github.com
+185.199.108.133               desktop.githubusercontent.com
+185.199.108.153               assets-cdn.github.com
+185.199.108.133               camo.githubusercontent.com
+185.199.108.133               github.map.fastly.net
+199.232.5.194                 github.global.ssl.fastly.net
+140.82.112.3                  gist.github.com
+185.199.108.153               github.io
+140.82.114.4                  github.com
+192.0.66.2                    github.blog
+140.82.112.6                  api.github.com
+185.199.108.133               raw.githubusercontent.com
+185.199.108.133               user-images.githubusercontent.com
+185.199.108.133               favicons.githubusercontent.com
+185.199.108.133               avatars5.githubusercontent.com
+185.199.108.133               avatars4.githubusercontent.com
+185.199.108.133               avatars3.githubusercontent.com
+185.199.108.133               avatars2.githubusercontent.com
+185.199.108.133               avatars1.githubusercontent.com
+185.199.108.133               avatars0.githubusercontent.com
+185.199.108.133               avatars.githubusercontent.com
+140.82.113.10                 codeload.github.com
+52.217.135.113                github-cloud.s3.amazonaws.com
+52.217.74.20                  github-com.s3.amazonaws.com
+52.217.0.11                   github-production-release-asset-2e65be.s3.amazonaws.com
+52.216.250.204                github-production-user-asset-6210df.s3.amazonaws.com
+52.217.74.124                 github-production-repository-file-5c1aeb.s3.amazonaws.com
+185.199.108.153               githubstatus.com
+64.71.144.202                 github.community
+185.199.108.133               media.githubusercontent.com
+
+
+# Update time: 2021-08-04T10:15:00+08:00
+# Update url: https://raw.hellogithub.com/hosts
+# Star me: https://github.com/521xueweihan/GitHub520
+# GitHub520 Host End
+
+
+```
+
+##### 我想clone人家项目,但是很慢,怎么样提速?
+
+> 主流的方法有三个:
+>
+> 1. 修改host文件  (参考上面的开源库) ;
+> 2. 使用gitee克隆,然后去gitee下载  (推荐指数: ★★★);
+> 3. 使用gitclone命令 (推荐指数: ★★★★★), 使用教程参考[官网](https://www.gitclone.com/),推荐方法一,方法二在push项目时候出错.
+> 4. 使用github镜像下载, [镜像一](https://github.com.cnpmjs.org), [镜像二](https://hub.fastgit.org) (推荐指数: ★★★★★);
+
+##### 我push我的项目,每次push都需要输入账号密码,怎么解决?
+
+> 参考上面git命令的设置账号密码,设置如下指令即可达到主需要输入一次性账号密码
+
+```
+//保存账号密码,执行后,输入一次即可
+git config --global credential.helper store
+//清除保存的账号密码
+git config --global credential.helper reset
+```
+
+
 
