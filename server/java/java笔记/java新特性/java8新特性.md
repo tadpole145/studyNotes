@@ -362,10 +362,94 @@ JDK 1.0中包含了一个java.util.Date类，但是它的大多数方法已经�
 ##### 新时间日期API
 
 - java.time – 包含值对象的基础包
+
+```java
+/** 常用类----本地时间
+ *   LocalTime  : 本地时间
+ *   LocalDate : 本地日期
+ *   LocalDateTime : 本地时间日期   
+ */
+
+	//代码示例	
+	@Test
+    public void  test(){
+        //获取当前时间
+        LocalDateTime now = LocalDateTime.now();
+        System.out.println(now);  //2021-08-06T09:24:25.172
+        //指定时间
+        LocalDateTime dateTime = LocalDateTime.of(2020, 5, 20, 13, 14, 20);
+        System.out.println(dateTime);
+        //对日期时间做加减
+        System.out.println(dateTime.plusYears(1));
+        System.out.println(dateTime.minusMonths(2));
+
+    }
+ /** 机器时间
+ *   Instant :表示自1970年1月1日0时0分0秒（UTC--格林尼治时间）开始的秒数的对象,主要提供给计算机使用。
+ */
+// now()   静态方法，返回默认UTC时区的Instant类的对象
+
+//ofEpochMilli(long epochMilli)  静态方法，返回在1970-01-01 00:00:00基础上加上指定毫秒数之后的Instant类的对象
+
+//atOffset(ZoneOffset offset)  结合即时的偏移来创建一个 OffsetDateTime
+
+//示例:  获取格林尼治时间以来的秒数/毫秒数, 等价于 System.currentTimeMillis()
+Instant instant = Instant.now();
+long second = instant.getEpochSecond();
+long milli = instant.toEpochMilli();
+System.out.println("second="+second+",  毫秒="+milli);
+
+//时间计算类:  Duration, Duration
+//Duration  基于时间的时间量，例如“34.5 秒”。   此类以秒和纳秒为单位对数量或时间进行建模
+//Period  ISO-8601 日历系统中基于日期的时间量，例如“2 年、3 个月和 4 天”。   此类以年、月和日为单位对数量或时间进行建模
+
+
+```
+
+
+
 - java.time.chrono – 提供对不同的日历系统的访问
+
+```java
+//涉及到不同国家的不同日历系统,一般用不到.
+```
+
 - java.time.format – 格式化和解析时间和日期
+
+```java
+//使用api提供的格式化
+DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+LocalDateTime now = LocalDateTime.now();
+System.out.println("格式化时间 = " + formatter.format(now));
+//自定义时间格式
+DateTimeFormatter formatter1 = DateTimeFormatter.ofPattern("yyyy年MM月dd日 HH:mm:ss");
+String formatTime = formatter1.format(now);
+System.out.println(formatTime);
+//反向解析String类时间到原来格式
+LocalDateTime parseTime = LocalDateTime.parse(formatTime, formatter1);
+System.out.println("parseTime = " + parseTime);
+```
+
+
+
 - java.time.temporal – 包括底层框架和扩展特性
+
+```java
+//TemporalAdjuster 时间校正器,设置到指定的某个日期时间. 函数式接口类,其实现类为TemporalAdjusters, 通常配合LocalDateTime的with方法使用
+//示例, 设置时间为本地时间的当前月的第一天.
+LocalDateTime.now().with(TemporalAdjusters.firstDayOfMonth())
+```
+
+
+
 - java.time.zone – 包含时区支持的类
+
+```java
+//ZoneId为时区的包装类, 在需要获取指定时区的时间时候用到
+//获取上海时区
+ZoneId sh=ZoneId.of("Asia/Shanghai");
+LocalDateTime.now(sh);
+```
 
 
 
@@ -375,12 +459,15 @@ Java 8对注解处理提供了两点改进：可重复的注解及可用于类�
 
 ##### 可重复注解
 
-
+![image-20210806111451059](https://gitee.com/tadpole145/images/raw/main/20210806111451.png)
 
 ##### 可用于类型的注解
 
-
+![image-20210806112204109](https://gitee.com/tadpole145/images/raw/main/20210806112204.png)
 
 #### 其它新特性
 
-新增Nashorn引擎,可以运行js代码.
+- 新增Nashorn引擎,可以运行js代码.
+- jvm中的Metaspace取代PermGen空间
+- HashMap优化等
+
