@@ -1,3 +1,7 @@
+[TOC]
+
+
+
 ## MySQL
 
 mysql是一款免费的关系型数据库,它沿用了Linux的理念, 一切皆是文件, mysql底层也是文件,记录着各个数据.
@@ -16,7 +20,7 @@ mysql是一款免费的关系型数据库,它沿用了Linux的理念, 一切皆�
 
 ### 基本知识
 
-#### 数据库操作 C[create]R[read]U[update]D[delete]
+#### 数据库操作 [create]R[read]U[update]D[delete]
 
 ##### 连接数据库
 
@@ -98,6 +102,19 @@ create table xx (field dataType, field dataType,...,field dataType) character se
 - engine, 存在多种选项,默认是innodb.后面会详细介绍.
 
 ![image-20210913170929920](https://gitee.com/tadpole145/images/raw/main/20210913170929.png)
+
+###### 关键字
+
+comment, 解释字段
+
+```mysql
+create table tb_01(
+	`id` bigint(20) not null unique auto_increment comment '编号',
+    `user_name` varchar(20) not null default '' comment '用户名'
+) comment ='用户表'
+```
+
+
 
 ##### 字段数据类型
 
@@ -276,9 +293,65 @@ delete from user where user_id = 1;
 
 
 
+##### 表复制
+
+###### 表数据复制
+
+指将一个表中的数据,插入自己或者另外一张表的过程,
+
+```mysql
+-- 演示表之间复制, 将emp表中的五列数据复制到tab01中去
+INSERT INTO tab01
+(id, `name`, sal, job,deptno)
+SELECT empno, ename, sal, job, deptno FROM emp;
+
+-- 表的自我复制, 将tab01的数据复制一份插入自身表
+INSERT INTO tab01
+SELECT * FROM tab01;
+
+```
+
+
+
+###### 表结构复制
+
+指把一个表的结构复制到另外一张表.
+
+```mysql
+-- 复制emp表的结构  
+create table tab2 like emp;
+```
+
+
+
+示例:  删除一个表中重复的数据
+
+```mysql
+-- 方法有多种,此处举例一种我测试验证通过的
+
+-- 人为增加重复数据
+INSERT INTO dept 
+SELECT * FROM dept
+-- 1.创建临时表
+CREATE TABLE temp LIKE dept
+
+-- 2.通过distinct查询,将dept的数据复制到temp
+INSERT INTO temp 
+SELECT DISTINCT *  FROM dept
+
+-- 3 删除原dept表
+DROP TABLE dept
+-- 4 将temp表改名为dept
+RENAME TABLE temp TO dept
+```
+
+
+
+
+
 #### 行操作
 
-###### 插入行数据
+##### 插入行数据
 
 ```mysql
 # 插入一条记录
@@ -299,11 +372,641 @@ INSERT INTO emp1(id, user_name,sex, salary, `resume`) VALUES(10,'小王','女',7
 
 
 
+##### 更新行操作
+
+```mysql
+update tb_name set col_name=expr1[, col_name2=expr2] [where condition]
+```
+
+示例:
+
+```mysql
+-- 1. 更新指定列的所有行  (一列)
+UPDATE emp1 SET salary =5000
+-- 2. 更新小王的薪水为8000 (一行)
+UPDATE emp1 SET salary = 8000 WHERE user_name="小王"
+-- 更新小张的生日为"1990-1-1", 薪水在原来的基础上加1K (多列一行)
+UPDATE emp1 SET birthday="1990-1-1", salary=salary+1000 WHERE user_name="小张"
+```
+
+注意事项
+
+- update可以更新指定列的所有行, 要慎用, 一般带着指定条件更新;
+- 如果需要修改多个列,则可以通过字段set col1 =exp1, col2=expr2来指定;
+
+##### 删除行
+
+```mysql
+delete from tb_name [where condition]
+```
+
+示例:
+
+```mysql
+-- 1. 删除指定行
+DELETE FROM emp1 WHERE user_name='阿宝'
+-- 2. 删除表所有的行
+DELETE FROM emp1  等价于  truncate table emp1
+```
+
+注意事项:
+
+- 删除语句应该带where条件,不然会删除整个表的数据
+- 当删除表的所有数据时候, 不会删除表结构, 如果需要删除整表,参考表删除操作.
+
+##### 查询语句
+
+```mysql
+-- 指定列名
+select [distinct] *|[column1, column2, column3....] from tb_name
+-- 通过表达式查询并排序
+select * |[column1 | expr1 as col1, column2 | expr2 as col2...] from tb_name where conditions order by col_name asc|desc 
+ 
+```
+
+注意事项:
+
+- distinct, 除重, *代表所有列
+- column指定列名,可以一次查询1或者多列;
+- 可以通过表达式计算得出虚拟列;
+- 可以通过as关键字自定义列的别名;
+- 可以通过where进行条件过滤查询;
+- asc(ascend )代表升序,默认不写, desc(descend)代表降序;
+- group by为分组函数, 用于对查询结果进行分组统计, having可选, 代表使用子句对分组后的结果进行过滤.
+- dual 是mysql中的亚元表,当没有表时,可以使用它替代.
 
 
 
+###### 函数
+
+- 使用统计函数
+- 求和函数
+- 平均函数
+
+- 分组函数
+
+```mysql
+-- 使用统计函数
+select count(*)| count(列名) from student where conditions
+-- 求和函数
+SELECT SUM(math)[, sum(chinese),sum(english)...] FROM student;
+-- 平均函数
+SELECT AVG(math) FROM student;
+-- 最大/最小函数
+SELECT MAX(math) AS math_high_socre, MIN(math)   AS math_low_socre
+FROM student;
+-- 分组函数
+select col1, col2,col3.. from tb_name group by colname [having conditions]
+
+```
+
+- 字符串函数
+
+ ![image-20210922132135301](https://gitee.com/tadpole145/images/raw/main/20210922144132.png)
+
+- 数学函数
+
+![image-20210922144558443](https://gitee.com/tadpole145/images/raw/main/20210922144558.png)
 
 
+
+-  时间日期函数
+
+![image-20210922145816130](https://gitee.com/tadpole145/images/raw/main/20210922145816.png)
+
+-  加密函数
+
+![image-20210922171522816](https://gitee.com/tadpole145/images/raw/main/20210922171522.png)
+
+> user(), 显示结果为:  用户@IP 地址, 可以查看用户名, ip
+
+-  流程控制函数
+
+![image-20210922171755993](https://gitee.com/tadpole145/images/raw/main/20210922171756.png)
+
+
+
+部分示例
+
+```mysql
+--  统计每个学生的总分
+SELECT `name`, (chinese+english+math) FROM student;
+--  在所有学生总分加 10 分的情况
+SELECT `name`, (chinese + english + math + 10) FROM student;
+--  使用别名表示学生分数。
+SELECT `name` AS '名字', (chinese + english + math + 10) AS total_score
+FROM student;
+-- 查询学生表中韩xx名字, 总分, 并以总分升序排列,
+SELECT `name`, (chinese + english + math) AS total_score FROM student
+WHERE `name` LIKE '韩%'
+ORDER BY total_score asc;
+
+
+-- 显示每个部门的平均工资和最高工资
+SELECT MAX(sal), AVG(sal),deptno FROM emp GROUP BY deptno
+-- 显示每个部门每种岗位的平均工资与最低工资
+SELECT MAX(sal), AVG(sal),deptno, job FROM emp GROUP BY deptno,job
+-- 显示平均工资低于 2000 的部门号和它的平均工资 
+SELECT AVG(sal) AS avg_sal, deptno FROM emp GROUP BY deptno HAVING avg_sal <2000
+
+-- 以首字母小写的方式显示所有员工emp表的姓名
+-- 思路:  获取ename, 截取第一个字符转小写, 拼接后面的字符.
+SELECT CONCAT(LCASE(SUBSTRING(ename,1,1)),   SUBSTRING(ename,2)) AS new_name FROM emp;
+SELECT CONCAT(LCASE(LEFT(ename,1)),   SUBSTRING(ename,2)) AS new_name
+FROM emp;
+```
+
+在 where 子句中经常使用的运算符
+
+![image-20210922101218801](https://gitee.com/tadpole145/images/raw/main/20210922101218.png)
+
+
+
+###### 模糊查询
+
+使用like操作符
+
+- %: 匹配多个字符
+- _ :匹配单个字符
+
+示例
+
+```mysql
+--   如何显示首字符为 S 的员工姓名和工资?
+SELECT ename, sal FROM emp WHERE ename LIKE 'S%'
+--   如何显示第三个字符为大写 O 的所有员工的姓名和工资?
+SELECT ename, sal FROM emp WHERE ename LIKE '__O%'
+--    如何显示没有上级的雇员的情况
+SELECT * FROM emp WHERE mgr IS NULL;
+```
+
+###### 分页查询
+
+```mysql
+select ... limit start,rows
+-- 表示从start+1开始,往后查询rows行数据..  
+```
+
+示例
+
+```mysql
+ -- 按雇员的 id 号升序取出，  每页显示 3 条记录，请显示  第 1  页
+SELECT * FROM emp ORDER BY empno LIMIT 0, 3;
+```
+
+###### 分组查询
+
+语法:
+
+```mysql
+select * from tb_name group by col1
+```
+
+注意事项
+
+- 如果select语句同时包含group by, having, order by, limit , 那么它们之间的顺序是group by-->having--> order by-->limit , 如果顺序错乱会导致查询出错.
+
+示例
+
+```mysql
+-- (1)  显示每种岗位的雇员总数、平均工资。
+SELECT COUNT(*) as emp_total, AVG(sal) as avg_sal, job FROM emp GROUP BY job;
+-- (2)  显示雇员总数，以及获得补助的雇员数。
+SELECT COUNT(*), COUNT(comm) FROM emp
+-- (3) 统计没有获得补助的雇员数
+SELECT COUNT(*), COUNT(IF(comm IS NULL, 1, NULL))FROM emp
+SELECT COUNT(*), COUNT(*) - COUNT(comm) FROM emp
+-- (4)综合案例:  请统计各个部门的平均工资， 并且是大于 1000 ，并且按照平均工资从高到低排序然后取出前2条
+SELECT deptno, AVG(sal) AS avg_sal FROM emp GROUP BY deptno HAVING   avg_sal > 1000 ORDER BY avg_sal DESC LIMIT 0,2
+```
+
+
+
+###### 多表查询
+
+笛卡尔集: 多个表之间,由于查询条件的缺乏,导致每张表的每条数据都是对其它整表的映射. 比如A表有8条数据, B表5条, 如果没有任何条件限制,去查询
+
+```mysql
+select * from tableA, tableB;
+
+```
+
+这样会导致查询出来的数据有8*5=40条, 这就是所谓的笛卡尔集.
+
+当涉及多表查询时, 查询条件不应该少于(表个数-1)个条件. 这样才能避免出现笛卡尔集.
+
+示例
+
+```mysql
+-- 显示各个员工的姓名，工资，及其工资的级别
+select ename, sal, grade from emp , salgrade where sal between losal and hisal;
+```
+
+
+
+**自连接**
+
+> 同一张表的连接查询.(把一张表当做2张表)
+
+示例
+
+```mysql
+-- 显示公司员工名字和他的上级的名字
+SELECT worker.ename AS '职员名' ,   boss.ename AS '上级名' FROM emp worker, emp boss WHERE worker.mgr = boss.empno;
+# 表取别名不需要as, 列取别名才需要.
+```
+
+
+
+###### 子查询
+
+- 子查询:   指嵌入在其它 sql 语句中的 select 语句,也叫嵌套查询
+- 单行单列子查询: 指只返回一行数据的子查询语句;
+
+- 多行单列子查询:  指返回多行数据的子查询     使用关键字  in, all, any
+- 临时表查询(多行多列)
+- 一行多列子查询
+
+示例
+
+```mysql
+-- (单行示例) 如何显示与 SMITH 同一部门的所有员工?
+-- 1. 查询出smith所在的部门编号;  2. 根据编号查询所有的员工
+SELECT * FROM emp
+WHERE deptno = (
+    SELECT deptno
+    FROM emp
+    WHERE ename = 'SMITH'
+)
+
+-- (多行示例) :如何查询和部门 10 的工作相同的雇员的名字、岗位、工资、部门号,  但是不含 10 号部门自己的雇员.
+-- 思考:  1.查出10号部门的工种;  2. 查出指定列中工种IN 步骤一中的数据,  3. 排除10号部门
+select ename, job, sal, deptno
+from emp
+where job in (
+    SELECT DISTINCT job
+    FROM emp
+    WHERE deptno = 10
+) and deptno != 10
+# DISTINCT去重
+
+--  查询scshop中各个类别中,价格最高的商品信息(id,类别,价格,商品名).
+# 思路: 1.查询各个类别中价格最高的表;  2 查询商品信息表,  3,把步骤1,2得到的表当做临时表,用于匹配步骤2的表临时表的信息,取交集
+select goods_id, ecs_goods.cat_id, goods_name,shop_price 
+form (
+	select cat_id , max(shop_price) as max_price 
+    from ecs_goods group by cat_id
+)where temp.cat_id = ecs_goods.cat_id and temp.max_price =ecs_goods.shop_price
+
+
+-- 显示工资比部门 30 的所有员工的工资高的员工的姓名、工资和部门号
+-- 思考:  1, 求出30部门的所有员工工资, 2 使用all操作符
+SELECT ename, sal, deptno
+FROM emp
+WHERE sal > ALL(
+    SELECT sal
+    FROM emp
+        WHERE deptno = 30
+)
+-- 方法二,  1,查出30部门的最高工资, 2, 查出大于最高工资即可.
+SELECT ename, sal, deptno
+FROM emp
+WHERE sal > (
+    SELECT MAX(sal)
+    FROM emp
+    WHERE deptno = 30
+)
+
+-- 如何显示工资比部门 30 的其中一个员工的工资高的员工的姓名、工资和部门号
+-- 与上面一样, all关键字改为any即可, 或者求出部门30的工资的最小值
+
+-- 一行多列, 多个列值相等
+--  如何查询与 allen 的部门和岗位完全相同的所有雇员(并且不含 allen 本人)
+SELECT *
+FROM emp
+WHERE (deptno , job) = (
+        SELECT deptno , job
+        FROM emp
+        WHERE ename = 'ALLEN'
+) AND ename != 'ALLEN'
+
+```
+
+##### 合并查询
+
+主要用于where条件不太好写的时候, 使用不太多.
+
+union all  : 不去重
+
+union : 去重
+
+```mysql
+-- 示例
+SELECT ename,sal,job FROM emp WHERE sal>2500 
+UNION ALL
+SELECT ename,sal,job FROM emp WHERE job='MANAGER'  
+```
+
+##### 表外连接
+
+左外连接:  左侧表完全显示,就称之为左外连接;
+
+右外连接:  右侧表完全显示, 就称之为右外连接;
+
+```mysql
+-- 语法如下
+select... from table1 left join table2 on conditions
+-- 示例,显示所有人的成绩，如果没有成绩，也要显示该人的姓名和 id 号,成绩显示为空
+SELECT `name`, stu.id, grade
+FROM stu LEFT JOIN exam
+ON stu.id = exam.id;
+```
+
+
+
+#### 约束
+
+用于确保数据库中的数据满足特定的商业规则,主要包括:
+
+- not null
+- unique
+- primary key
+- foreign key
+- check
+
+##### primary key约束
+
+语法:    字段名  字段类型  primary key
+
+用于标识唯一的行数据, 方便提升查询效率
+
+- 当定义为主键后, 该字段不能为空,也不能重复;
+- 一张表最多只能有一个主键, 可以是复合主键
+
+```mysql
+-- 示例
+-- 1. 单一主键
+id int primary key
+-- 或者
+id int,
+primary key(id)
+ 
+ 
+--  2. 复合主键
+create table t1
+(
+	id int,
+    user_name varchar(32),
+    email varchar(32),
+    primary key(id,user_name)
+)
+```
+
+##### not null约束
+
+非空,没啥知识点,
+
+##### unique 约束
+
+唯一,  代表不能重复,  但是null不是具体的值, 可以插入多个null.
+
+ unique not null  使用效果类似  primary key, 区别在于unique可以有多个, 但是一张表只能有一个primary key.
+
+#####  foreign key(外键)
+
+用于定义主表和从表之间的约束关系, 外键约束定义在从表上
+
+```mysql
+-- 语法
+foreign key(本表字段名) references 主表(字段名)
+```
+
+- 主表的主键必须是primary key 或者unique ;
+- 表的引擎必须是Innodb才行;
+- 外键字段类型应该与主键字段类型一致.
+- 外键字段类型的值必须在主键中出现或者为null(前提是主键可为null);
+- 一旦建立主外键关系,数据就不可随意删除了.
+
+![image-20210923173423424](https://gitee.com/tadpole145/images/raw/main/20210923173423.png)
+
+
+
+##### check约束
+
+用于强制行数据必须满足的条件, mysql8.0.16以前只支持check语法, 并不会生效, 8.0.16版本后完全支持check约束.
+
+```mysql
+-- 示例
+--  测试
+CREATE TABLE t23 (
+id INT PRIMARY KEY,
+`name` VARCHAR(32) ,
+sex VARCHAR(6) CHECK (sex IN('man','woman')),
+sal DOUBLE CHECK ( sal > 1000 AND sal < 2000)
+);
+--  添加数据
+INSERT INTO t23
+VALUES(1, 'jack', 'mid', 1);
+```
+
+
+
+#### 自增长
+
+```mysql
+-- 语法
+id int primary key auto_increment
+
+-- 添加自增长字段的几种方式, 假设id字段自增长
+insert into xxx(id, col2...) values (null, v2...)
+insert into xxx(col2,col3....) values (v2, v3...)
+insert into xxx values (null ,v2,v3....)
+```
+
+注意事项:
+
+- 一般自增长和primary key/ unique搭配使用;
+- 自增长修饰的字段为整形, 虽然小数类型也可,但是很少这样使用;
+- 自增默认初始值为1, 也可以指定默认初始值
+- 添加数据时, 如果指定了自增字段的值,则以指定值为准, 后面的数据在指定值基础上加1
+
+```mysql
+-- 指定自增初始值示例
+CREATE TABLE t24
+(id INT PRIMARY KEY AUTO_INCREMENT ,
+`name` VARCHAR(32)NOT NULL DEFAULT ''
+) AUTO_INCREMENT=100
+
+--  修改默认的自增长开始值
+ALTER TABLE t24 AUTO_INCREMENT = 10
+```
+
+
+
+#### 索引
+
+给数据库的字段增加索引,会导致文件存储空间增加,但是会大大提高数据的查询效率. 因为数据查询是使用最多最频繁的操作.提升搜索效率有助于缓解服务器压力.
+
+##### 原理
+
+没有索引的搜索是全表扫描,会挨个对比,找到所需要的结果.使用索引后,会形成一个索引的二叉树(会增加存储空间), 搜索效率变成了$\log_2n$, 但是也会降低删除操作的效率.
+
+##### 索引类型
+
+1. 主键索引, primary key
+2. 唯一索引,  unique
+3. 普通索引 index
+4. 全文索引 (适用于引擎为MyISAM), 开发中一般使用Solr和ElasticSearch框架
+
+##### 索引使用
+
+```mysql
+--  添加索引
+create [unique] index idx_name on tab_name(col_name[(length)]) [asc|desc]
+alter table tab_name add index [idx_name] (col_name) #添加普通索引
+alter table tab_name add primary key(col_name) #添加主键索引
+-- 示例
+create unique index id_idx on tab25(id)
+CREATE TABLE t26 (
+id INT ,
+`name` VARCHAR(32));
+ALTER TABLE t26 ADD PRIMARY KEY(id)
+
+-- 删除索引
+-- 删除普通索引
+drop index idx_name on table tab_name
+alter table tab_name drop index idx_name
+-- 删除主键索引, 因为一张表最多只有一个主键索引
+alter table tab_name drop primary key  
+
+-- 修改索引 
+1. 删除原索引
+2. 增加新索引
+
+-- 查询索引
+show index from tab_name
+show indexes from tab_name
+show keys from tab_name
+desc tab_name
+```
+
+注意事项
+
+- 较频繁的作为条件查询字段应该创建索引,不会出现在条件查询中的字段不该创建索引
+- 唯一性太差的字段不适合单独创建索引
+- 更新频繁的字段不适合创建索引
+
+
+
+#### 事务
+
+事务是用于保证数据的一致性, 它由一组相关的dml(增删改)语句组成,该组操作要么全部成功,要么全部失败.
+
+mysql数据库控制台事务的几个操作
+
+```mysql
+start transaction 或者 set autocommit = off  #开启一个事务
+savepoint pointName  #设置备份点
+rollback to pointName  #回滚到指定备份点
+rollback   #回滚到开启事务点
+commit  #提交事务, 也是结束事务
+```
+
+ 注意事项:
+
+- 如果不开启事务,默认情况下, dml操作是自动提交,不能回滚;
+- 开启事务后, 在提交之前,可以指定回滚点, 不指定就默认回滚到开启事务的状态;
+- 回滚只能向前,不能向后.  比如开启事务后,先后创建了A,B 二个备份点, 第一次回滚到A后, 是不能再次回滚到B的,因为在回滚到A时,已经把A后的数据给清除了.
+- mysql的事务机制需要innodb的存储引擎才可以使用.
+
+
+
+##### 事务的隔离级别
+
+多个连接开启各自事务操作的数据库中的数据时,数据库系统要负责隔离操作, 以保证各个连接在获取数据时候的准确性.  如果不考虑隔离性,可能会产生脏读, 不可重复读, 幻读.
+
+- 脏读
+
+> 当一个事务读到了另外一个事务尚未提交的数据时,产生脏读.
+>
+> 大白话解释:  你看到了你不该看的东西,就是脏东西.
+
+- 不可重复读
+
+> 同一次查询在同一事务中多次进行,由于其它事务提交事务所做的修改或者删除,导致每次查询的结果不可重复
+
+- 幻读
+
+> 同一次查询在同一事务中多次进行,由于其它事务提交事务所做的插入操作,每次返回不同的结果集,此时发生幻读.
+
+![image-20210924161409695](https://gitee.com/tadpole145/images/raw/main/20210924161409.png)
+
+
+
+##### 隔离级别的设置
+
+```mysql
+-- 1.查询当前会话隔离级别
+select @@tx_isolation
+-- 2. 查看系统当前隔离级别
+select @@global.tx_isolation
+-- 3. 设置当前会话隔离级别, xxx代表上图4种级别
+set session transaction isolation level xxx
+-- 4. 设置全局会话隔离级别, xxx代表上图4种级别
+set global transaction isolation level xxx
+-- 5, 修改全局级别,也可以在mysql的安装目录的ini文件中添加设置
+transaction-isolation =xxx
+-- 6 repeatable read为mysql的默认级别,一般没必要修改
+```
+
+##### 事务ACID
+
+- 原子性Atomicity : 指事务是一个不可分割的单位, 要么全部成功,要么全部失败;
+- 一致性Consistency:  事务必须使数据库从一个一致性状态变动到另一个一致性状态;
+- 隔离性Isolation:  多个用户并发访问数据库时,为了防止当前会话不被其他会话操作干扰;
+- 持久性Durability: 事务一旦被提交,对数据库中的数据的改变就是永久性的.
+
+
+
+#### 表类型与存储引擎
+
+mysql表类型由存储引擎决定, 总共有6种
+
+- csv
+- memory
+- archive
+- mrg_myisam
+- myisam
+- innodb
+
+![image-20210924174541539](https://gitee.com/tadpole145/images/raw/main/20210924174541.png)
+
+注意事项:
+
+- MyISAM不支持事务+外键,但是访问与插入速度快;
+- InNoDB支持事务安全,插入效率比较低, 对比与MYISAM,由于其支持B+树索引,导致存储空间相对较大,但是查询效率很高.
+- MEMORY在内存中创建表,访问速度非常快, 默认使用hash索引,但是一旦mysql服务关掉,其数据也会丢失, 表结构还在.
+
+
+
+如何选择合适的引擎
+
+1. 如果应用无需事务,优先选择MYISAM,速度快, 否则选择InNoDB;
+2. Memory在内存中,无I/O等待, 适合存储变化频繁的不重要数据, 比如用户在线状态.
+
+##### 修改引擎
+
+```mysql
+alter table tbName engine = engineName
+```
+
+
+
+#### 视图
+
+视图是一个虚拟表,其内容来自于真实的表(基表),目的是为了控制访问权限. 比如某类角色只能访问用户表中的部分列字段.
+
+视图可以修改基表, 基表的变化也会引起视图的变化.
 
 
 
