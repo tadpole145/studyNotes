@@ -1,3 +1,21 @@
+---
+title: Nginx详解
+date: 2021-03-25 18:11:20
+author: 小蝌蚪
+img: 
+coverImg: 
+top: false
+cover: false
+toc: true
+mathjax: false
+summary: 介绍Nginx详细使用
+tags: [代理工具]
+categories: [工具]
+comments: false
+---
+
+
+
 ## Nginx
 
 ### 基本概念

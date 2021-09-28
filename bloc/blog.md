@@ -1,3 +1,19 @@
+---
+title: 个人博客搭建
+date: 2020-09-01 14:13:423
+author: 小蝌蚪
+img: 
+coverImg: 
+top: false
+cover: false
+toc: true
+mathjax: false
+summary: 使用typora+hexo+Node搭建个人博客网站
+tags: [博客搭建]
+categories: [工具]
+comments: false
+---
+
 
 
 ### 个人博客搭建
@@ -17,17 +33,21 @@
 
 千万不要偷懒,搭建博客系统要先学学node知识,git知识,hexo官方文档,再开始搭建自己的博客.自己踩坑git的main,master主干/分支, githubPage显示,hexo与node版本不兼容等....其实你都按照最新的文档就不会踩坑了.
 
-由于参考文章教程写的非常详细,直接照着来就行,这儿记录下hexo的几个常用操作按钮就好.
+由于参考文章教程写的非常详细,直接照着来就行,这儿记录下hexo的几个常用操作命令就好.
 
-- hexo init <xxx>
-- hexo version  显示版本
+```bash
+  hexo init <xxx>  # 初始化
+  hexo version   #显示版本
 
-- hexo clean 清除生成的文件
-- hexo f    强制重新生成文件
-- hexo g 生成网页, 只生成有变动的网页
-- hexo s  启动服务器,可以本地预览,默认情况下，访问网址为： `http://localhost:4000/`
-- hexo publish [layout] <filename>  发表草稿
-- hexo d 部署
+  hexo clean  #清除生成的文件
+  hexo f    #强制重新生成文件
+  hexo g #生成网页, 只生成有变动的网页
+  hexo s  #启动服务器,可以本地预览,默认情况下，访问网址为： `http://localhost:4000/`
+  hexo publish [layout] <filename>  # 发表草稿
+  hexo d  # 部署
+```
+
+
 
 网上一些博客写的X分钟搭建个人blog等,我不太建议直接copy人家的源码修改,还是自己看看[hexo配置文档](https://hexo.io/zh-cn/docs/configuration),只有了解了,才知道怎么写. 
 

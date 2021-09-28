@@ -1,3 +1,23 @@
+---
+title: Linux系统学习
+date: 2021-04-08 10:59:23
+author: 小蝌蚪
+img: 
+coverImg: 
+top: false
+cover: false
+toc: true
+mathjax: false
+summary: Linux从0到入门
+tags: [系统]
+categories: [开发教程]
+comments: false
+---
+
+
+
+
+
 ## Linux系统学习
 
 [官网地址](https://www.linux.org/), 本笔记是根据B占韩顺平老师的[一周学会Linux](https://www.bilibili.com/video/BV1Sv411r7vd)而总结的.

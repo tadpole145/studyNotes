@@ -1,3 +1,19 @@
+---
+title: yaml语法详解
+date: 2021-03-18 15:19:54
+author: 小蝌蚪
+img: 
+coverImg: 
+top: false
+cover: false
+toc: true
+mathjax: false
+summary: 介绍yaml语法与详细使用
+tags: [配置工具]
+categories: [工具]
+comments: false
+---
+
 
 
 [官网地址](https://yaml.org/spec/)

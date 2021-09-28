@@ -1,24 +1,178 @@
-[TOC]
+---
+title: MySQL知识详解
+date: 2020-10-28 17:10:24
+author: 小蝌蚪
+img: 
+coverImg: 
+top: false
+cover: false
+toc: true
+mathjax: false
+summary: 介绍MySQL的详细安装使用
+tags: [MySQL]
+categories: [数据库]
+comments: false
+---
 
 
 
-## MySQL
 
-mysql是一款免费的关系型数据库,它沿用了Linux的理念, 一切皆是文件, mysql底层也是文件,记录着各个数据.
 
-### 安装与配置
+## [MySQL](https://www.mysql.com/)
 
-#### 5.7版本 
+mysql是一款免费的关系型数据库,它沿用了Linux的理念, 一切皆是文件, mysql底层其实也是文件,通过文件记录着各个数据. 另外,mysql跟linux一样, 对用户权限控制粒度划分很细,需要严格控制好root权限哦.
 
-#### 8.0+版本
+### 下载与安装配置
+
+#### 下载
+
+官网地址:  https://www.mysql.com/
+
+ 本人使用win系统,因此使用win版本的mysql记录下载教程,其余系统操作步骤一样,只是最后一步,切换系统,选择对应的mysql即可.
+
+现在windows几乎都是64位操作系统,如果你使用的32位,直接第三步选择32位安装文件即可,此处以64位操作系统讲解
+
+![mysql下载](https://gitee.com/tadpole145/images/raw/main/20210926134159.png)
+
+##### mysql的版本说明
+
+1.  MySQL Community Server 社区版本，开源免费，但不提供官方技术支持。
+2. MySQL Enterprise Edition 企业版本，需付费，可以试用30天。
+3. MySQL Cluster 集群版，开源免费。可将几个MySQL Server封装成一个Server。
+4. MySQL Cluster CGE 高级集群版，需付费。
+5. MySQL Workbench（GUITOOL）一款专为MySQL设计的ER/数据库建模工具。它是著名的数据库设计工具DBDesigner4的继任者。MySQLWorkbench又分为两个版本，分别是社区版（MySQL Workbench OSS）、商用版（MySQL WorkbenchSE）。
+
+
+
+Generally Available（GA）Release 是指软件的通用版本，一般指正式发布的版本。
+
+由于mysql8不再提供win64的msi安装包,故此处以5+版本做说明
+
+- mysql-5.5.19-win32.msi，windows安装包，msi安装包是用msiexec安装完成的。windows下双击, 然后根据向导安装即可，跟安装微信一样简单方便。
+- mysql-5.5.19.zip，这个是windows源文件，需要编译。不建议使用 
+- mysql-5.5.19-win32.zip，这个文件解包后即可使用，是编译好的windows32位MySQL。需要手工配置, 32位,64位win系统都可以使用
+- mysql-5.5.19-win64.zip , 64位win系统专用的文件压缩包,需要手工配置, 一般我们下载此版本
+
+
+
+#### 安装
+
+##### MSI文件安装配置
+
+如果是下载的MSI安装文件, 跟着安装向导,一步步选择配置即可
+
+##### zip文件安装与配置
+
+此处以C盘安装配置做讲解,实际工作中,建议安装在非系统盘,本人一般习惯在D盘新建一个dev目录,安装开发用到的各种软件.
+
+5+版本和8+版本手动安装配置操作一样, 步骤如下:  
+
+1. 将加压后的mysql文件目录放在指定文件夹,此处的解压文件目录实际上就是安装目录.
+2. 以管理员身份运行命令行窗口
+
+![1727568-20190915194138600-1666145922](https://gitee.com/tadpole145/images/raw/main/20210926141131.jpg)
+
+3. 切换路径到mysql的bin目录下
+
+![1727568-20190915194319422-1269147823](https://gitee.com/tadpole145/images/raw/main/20210926141228.jpg)
+
+4. 安装mysql的服务：mysqld --install
+
+![1727568-20190915194355509-621408710](https://gitee.com/tadpole145/images/raw/main/20210926141949.jpg)
+
+5. 初始化mysql，在这里，初始化会产生一个随机密码,如下图框框所示，记住这个密码，后面会用到(mysqld --initialize --console)
+
+![1727568-20190915194537624-1288770126](https://gitee.com/tadpole145/images/raw/main/20210926142057.jpg)
+
+6. 开启mysql的服务(net start mysql)
+
+![1727568-20190915194809019-447378790](https://gitee.com/tadpole145/images/raw/main/20210926142138.jpg)
+
+7. 登录验证，mysql是否安装成功！(要注意上面产生的随机密码，不包括前面符号前面的空格，否则会登陆失败)，如果和下图所示一样，则说明你的mysql已经安装成功！注意，，一定要先开启服务，不然会登陆失败，出现拒绝访问的提示符！！！
+
+![1727568-20190915194855594-1799062186](https://gitee.com/tadpole145/images/raw/main/20210926142644.jpg)
+
+8. 修改密码. 由于初始化产生的随机密码太复杂，，不便于我们登录mysql
+
+![1727568-20190915195232011-1164270181](https://gitee.com/tadpole145/images/raw/main/20210926142741.jpg)
+
+9. 配置全局变量, 建议配置在用户环境变量,而非系统环境变量
+
+![1727568-20190915195658938-215279743](https://gitee.com/tadpole145/images/raw/main/20210926143040.jpg)
+
+![1727568-20190915195808186-1920486822](https://gitee.com/tadpole145/images/raw/main/20210926143149.jpg)
+
+10. 指定mysql存放数据的目录地址, 一般我建议就在当前安装目录下或者平级目录下新建一个mysqlData文件夹.
+11. 创建mysql的配置文件;  在mysql目录下创建一个ini或cnf配置文件，在这里我创建的是ini配置文件，里面写的代码是mysql的一些基本配置
+
+```ini
+[mysqld]
+# 设置3306端口
+port=3306
+# 设置mysql的安装目录
+basedir=D:\mysql\mysql-8.0.17-winx64
+# 设置mysql数据库的数据的存放目录, 根据第10步你创建的目录名字一样
+datadir=D:\mysql\mysql-8.0.17-winx64\mysqlData
+# 允许最大连接数
+max_connections=200
+# 允许连接失败的次数。
+max_connect_errors=10
+# 服务端使用的字符集默认为utf8mb4
+character-set-server=utf8mb4
+# 创建新表时将使用的默认存储引擎
+default-storage-engine=INNODB
+# 默认使用“mysql_native_password”插件认证
+#mysql_native_password
+default_authentication_plugin=mysql_native_password
+[mysql]
+# 设置mysql客户端默认字符集
+default-character-set=utf8mb4
+[client]
+# 设置mysql客户端连接服务端时默认使用的端口
+port=3306
+default-character-set=utf8mb4
+```
+
+![image-20210926144929477](https://gitee.com/tadpole145/images/raw/main/20210926144929.png)
+
+#### 常用命令
+
+```bash
+# 1. 安装服务
+mysqld --install
+# 2. 初始化
+mysqld --initialize --console
+# 3. 开启服务
+net start mysql
+# 4. 关闭服务
+net stop mysql
+# 5. 删除服务
+sc delete mysql
+# 6.登录
+mysql -u root -p
+```
+
+
+
+
 
 ### 图形化界面工具
 
 #### Navicat
 
+一款收费的数据库视图工具.
+
+建议使用之前,看下基本教程,此处教程略
+
 #### sqlyog
 
+一款免费的数据库视图工具,提供免费的社区版和收费的专业版, 访问[官网](https://www.webyog.com/)地址即可下载.
+
+建议使用之前,看下基本教程,此处教程略
+
 ### 基本知识
+
+mysql基础知识主要是了解相关基础概念与学会简单使用, 详细原理参考下面的进阶.
 
 #### 数据库操作 [create]R[read]U[update]D[delete]
 
@@ -420,8 +574,12 @@ DELETE FROM emp1  等价于  truncate table emp1
 -- 指定列名
 select [distinct] *|[column1, column2, column3....] from tb_name
 -- 通过表达式查询并排序
-select * |[column1 | expr1 as col1, column2 | expr2 as col2...] from tb_name where conditions order by col_name asc|desc 
+select * |[column1 | expr1 [as] col1, column2 | expr2 as col2...] from tb_name where conditions order by col_name asc|desc 
  
+ -- 别名的使用, as可省略, 别名如果出现空格,需要双引号
+SELECT id,`name` user_name FROM tb2
+SELECT id, `name` AS "User Name" FROM tb2
+SELECT id, `name`   "User Name" FROM tb2
 ```
 
 注意事项:
@@ -434,6 +592,7 @@ select * |[column1 | expr1 as col1, column2 | expr2 as col2...] from tb_name whe
 - asc(ascend )代表升序,默认不写, desc(descend)代表降序;
 - group by为分组函数, 用于对查询结果进行分组统计, having可选, 代表使用子句对分组后的结果进行过滤.
 - dual 是mysql中的亚元表,当没有表时,可以使用它替代.
+- as 别名, 其中as可忽略, 别名如果是多个单词组成,则需要双引号括起来.
 
 
 
@@ -1006,7 +1165,83 @@ alter table tbName engine = engineName
 
 视图是一个虚拟表,其内容来自于真实的表(基表),目的是为了控制访问权限. 比如某类角色只能访问用户表中的部分列字段.
 
-视图可以修改基表, 基表的变化也会引起视图的变化.
+- 视图不会生成一个新的表,只会生成一个对应的视图结构文件;
+
+- 视图可以修改基表, 基表的变化也会引起视图的变化.
+- 视图也可以再创建视图.
+
+
+
+##### 视图的使用
+
+```mysql
+-- 视图的增删改查
+create view view_name as select语句
+alter view view_name as select语句
+show create view view_name
+drop view view_name1, view_name2
+```
+
+##### 视图的优点
+
+- 安全.  视图可以隔离原基表的指定列数据,给予不同的权限的人,查看不同的字段.
+- 性能.  关系数据库经常分表存储,如果使用外键建立这些表之间的关系,这样做比较麻烦而且查询效率比较低, 通过视图可以快速进行查询.
+- 灵活. 系统中如果有旧表,由于存在设计缺陷即将被废弃,但是生产上有些地方使用到了这些表,不能轻易修改,此时可以新建视图将其映射到那么即将废弃的表,就可以安全的升级数据库.
+
+#### mysql权限管理
+
+##### 创建用户
+
+```mysql
+-- 创建用户,并指定可登录的ip
+create user '用户名'@'允许登录的ip' identified by 'password'
+-- 示例:
+-- 1.只允许本机登录
+CREATE USER 'jack'@'localhost' IDENTIFIED BY '123456'
+-- 2.只允许某个指定的ip或者ip点登录, %代表通配符
+CREATE USER 'lancy'@'192.168.%.%' IDENTIFIED BY '123456'
+-- 3.任意ip登录,  
+CREATE USER 'tom' IDENTIFIED BY '123456'
+CREATE USER 'tom'@'%' IDENTIFIED BY '123456'
+
+
+-- 删除某个用户, 注意删除必须与创建用户的ip一致
+drop user '用户名'@'ip'
+-- 1. 删除本机用户jack
+drop user 'jack'@'localhost'
+-- 2. 删除全网用户tom
+drop user 'tom'
+
+
+-- 用户密码修改
+-- 1. 修改自己密码
+set password = password('new password')
+-- 2. 修改他人密码(需要有修改权限)
+set password for '用户名'@'ip' = password('new pwd')
+```
+
+##### 权限列表
+
+![image-20210926105419382](https://gitee.com/tadpole145/images/raw/main/20210926105419.png)
+
+##### 授予用户指定权限
+
+```mysql
+-- 授予权限基本语法, 对象包含表,视图,存储过程等
+grant 权限 on 数据库.对象 to '用户名'@'ip' [identified by '用户密码']
+  -- 1. 多个权限,使用逗号分隔
+  grant select[, delete,create...] on....
+  -- 2. 授予所有权限, 使用all
+   grant all on ...
+  -- 3 *代表通配符, *.*代表本系统中所有数据库的所有对象, 库.*代表该库的所有对象
+  
+  
+  -- 回收用户授权
+  revoke 权限列表 on 库.对象 from '用户名'@'ip'
+  -- 5.7以后版本权限立马生效, 在早期版本,权限执行后,并没有立马生效,可以执行指令
+   flush privileges
+   
+```
 
 
 
@@ -1086,3 +1321,12 @@ spring.datasource.username=root
 spring.datasource.password=密码
 ```
 
+
+
+### mysql进阶
+
+进阶部分,介绍mysql原理性的东西以及实现方法.
+
+#### mysql的索引
+
+索引的本质是数据结构,目的是为了高效的获取数据.

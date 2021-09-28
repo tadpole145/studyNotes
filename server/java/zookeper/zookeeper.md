@@ -1,3 +1,23 @@
+---
+title: Zookeeper简介与应用
+date: 2021-03-23 10:15:34
+author: 小蝌蚪
+img: 
+coverImg: 
+top: false
+cover: false
+toc: true
+mathjax: false
+summary: 介绍zookeeper的安装与使用以及原理
+tags: [zookeeper]
+categories: [开发教程,中间件]
+comments: false
+---
+
+
+
+
+
 ### Zookeeper简介与应用
 
 ##### 什么是zookeeper

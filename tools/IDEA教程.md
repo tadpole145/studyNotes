@@ -1,3 +1,21 @@
+---
+title: IDEA介绍与使用
+date: 2020-12-23 20:30:12
+author: 小蝌蚪
+img: 
+coverImg: 
+top: false
+cover: false
+toc: true
+mathjax: false
+summary: 介绍IDEA的常用操作命令与使用
+tags: [软件]
+categories: [工具]
+comments: false
+---
+
+
+
 ### IDEA介绍与使用
 
 ==强烈建议看如下列举的参考文章,我记录的只是我遇到的或者我觉得有用的, 我使用的IDEA版本为 2020.1版本.==

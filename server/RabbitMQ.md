@@ -1,3 +1,23 @@
+---
+title: RabitMQ介绍与使用
+date: 2021-06-11 13:49:12
+author: 小蝌蚪
+img: 
+coverImg: 
+top: false
+cover: false
+toc: true
+mathjax: false
+summary: 介绍Rabbit消息中间件的安装与使用
+tags: [消息中间件]
+categories: [开发教程]
+comments: false
+---
+
+
+
+
+
 ## RabbitMQ
 
 资料来源: [B站视频](https://www.bilibili.com/video/BV1dE411K7MG), 笔记与源文档略有差异,根据自己的理解.重组了部分内容.

@@ -1,3 +1,23 @@
+---
+title: Maven的介绍与使用
+date: 2020-12-25 20:18:32
+author: 小蝌蚪
+img: 
+coverImg: 
+top: false
+cover: false
+toc: true
+mathjax: false
+summary: 介绍Maven的安装配置与使用
+tags: [编译工具]
+categories: [工具]
+comments: false
+---
+
+
+
+
+
 ### Maven
 
 一款服务于java平台的自动化构建工具
